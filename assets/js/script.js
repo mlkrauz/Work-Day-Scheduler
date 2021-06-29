@@ -42,7 +42,6 @@ function setSchedule() {
 function textInputClassSelection(momentCompatibleHour) {
     //there's definitely a better way to handle am/pm, but this is the way I set up the schedule...
     var thisHour = moment().hour();
-    console.log(momentCompatibleHour, thisHour);
 
     //return past, present, or future, depending on comparison.
     if (thisHour > momentCompatibleHour) {
@@ -56,7 +55,7 @@ function textInputClassSelection(momentCompatibleHour) {
     }
 }
 
-function createScheduleRowElement(scheduleObject) {
+function createScheduleRowElement(scheduleObject, index) {
     //create elements
     var scheduleRowEl = $(`<div class="row time-block"></div>`);
     var hourEl = $(`<div class="hour col-1">${scheduleObject.hour}</div>`);
@@ -66,6 +65,11 @@ function createScheduleRowElement(scheduleObject) {
     //get the correct class string from the textInputClassSelection method.
     textInputEl.addClass(textInputClassSelection(scheduleObject.momentCompatibleHour));
 
+    //handle button click events. Pass in the index & the value of the user input.
+    saveButtonEl.click(function() {
+        buttonClickedEvent(index, textInputEl.val());
+    })
+
     //append and return
     scheduleRowEl.append(hourEl);
     scheduleRowEl.append(textInputEl);
@@ -73,8 +77,9 @@ function createScheduleRowElement(scheduleObject) {
     return scheduleRowEl;
 }
 
-function buttonClickedEvent() {
-
+function buttonClickedEvent(index, inputText) {
+    scheduleList[index].text = inputText;
+    setSchedule();
 }
 
 function init() {
@@ -86,7 +91,7 @@ function init() {
 
     //create and append schedule rows
     for (var i = 0; i < scheduleList.length; i++) {
-        $(".container").append(createScheduleRowElement(scheduleList[i]));
+        $(".container").append(createScheduleRowElement(scheduleList[i], i));
     }
 }
 
