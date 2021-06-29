@@ -19,7 +19,7 @@ function defaultScheduleList() {
         }
 
         time = hour + suffix;
-        scheduleList.push({hour: time, text: ""});
+        scheduleList.push({hour: time, text: "", momentCompatibleHour: i-1});
     }
 }
 
@@ -39,20 +39,37 @@ function setSchedule() {
     localStorage.setItem("scheduleList", JSON.stringify(scheduleList));
 }
 
+function textInputClassSelection(momentCompatibleHour) {
+    //there's definitely a better way to handle am/pm, but this is the way I set up the schedule...
+    var thisHour = moment().hour();
+    console.log(momentCompatibleHour, thisHour);
+
+    //return past, present, or future, depending on comparison.
+    if (thisHour > momentCompatibleHour) {
+        return "past";
+    } else if (thisHour === momentCompatibleHour) {
+        return "present"
+    } else if (thisHour < momentCompatibleHour) {
+        return "future"
+    } else {
+        console.log("Bizarre bug, please fix.");
+    }
+}
+
 function createScheduleRowElement(scheduleObject) {
     //create elements
     var scheduleRowEl = $(`<div class="row time-block"></div>`);
-    var hourEl = $(`<div class="hour">${scheduleObject.hour}</div>`);
-    var textInputEl = $(`<textarea class="description">${scheduleObject.text}</textarea>`);
-    var saveButtonEl = $('<button class="saveBtn">SAVE</button>');
+    var hourEl = $(`<div class="hour col-1">${scheduleObject.hour}</div>`);
+    var textInputEl = $(`<textarea class="description col-10">${scheduleObject.text}</textarea>`);
+    var saveButtonEl = $('<button class="saveBtn col-1">SAVE</button>');
 
-    //handle classes
+    //get the correct class string from the textInputClassSelection method.
+    textInputEl.addClass(textInputClassSelection(scheduleObject.momentCompatibleHour));
 
     //append and return
     scheduleRowEl.append(hourEl);
     scheduleRowEl.append(textInputEl);
     scheduleRowEl.append(saveButtonEl);
-
     return scheduleRowEl;
 }
 
